@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#087f5b">
+<meta name="description" content="Ifa Islama School Management System">
+<title>IISMS — Ifa Islama School Management System</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--p:#087f5b;--p2:#0b6b4f;--dark:#092b25;--gold:#d7a93b;--bg:#f4f8f6;--card:#fff;--text:#15332d;--muted:#6c7d78;--danger:#c0392b;--border:#e1ebe6;--shadow:0 12px 35px rgba(7,55,43,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}.container{width:min(1180px,92%);margin:auto}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--dark)}
+.logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--dark));color:#fff;font-weight:900}
+nav{display:flex;gap:5px;align-items:center;flex-wrap:wrap}nav a,nav button{border:0;background:transparent;padding:9px 11px;border-radius:10px;cursor:pointer;color:var(--text);font-weight:700}nav a:hover,nav button:hover{background:#eaf5f0;color:var(--p)}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:11px;padding:12px 17px;font-weight:800;cursor:pointer}.primary{background:var(--p);color:#fff}.secondary{background:#fff;color:var(--p);border:1px solid #cfe1d9}.danger{background:#fff1ef;color:var(--danger)}
+.hero{min-height:620px;display:grid;place-items:center;background:radial-gradient(circle at 85% 15%,#d9f1e7 0,transparent 30%),linear-gradient(135deg,#f8fcfa,#eaf6f0)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:50px;align-items:center;padding:70px 0}.badge{display:inline-flex;padding:8px 13px;background:#e0f3eb;color:var(--p2);border-radius:99px;font-weight:800;font-size:13px}
+h1{font-size:clamp(42px,6vw,72px);line-height:1.02;margin:18px 0;color:var(--dark);letter-spacing:-2px}.hero p{font-size:18px;line-height:1.8;color:var(--muted)}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.hero-card{background:linear-gradient(160deg,var(--dark),var(--p2));color:#fff;border-radius:28px;padding:30px;box-shadow:0 30px 70px rgba(7,65,49,.25)}.hero-card .big{font-size:60px;font-weight:900;color:#e7c45b}
+section{padding:80px 0}.section-title{text-align:center;margin-bottom:42px}.section-title h2{font-size:36px;margin:0 0 10px;color:var(--dark)}.section-title p{color:var(--muted)}
+.cards,.register-grid,.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.register-grid,.contact-grid{grid-template-columns:repeat(4,1fr)}
+.card,.contact-item{background:var(--card);border:1px solid var(--border);border-radius:19px;padding:24px;box-shadow:var(--shadow)}.card h3{margin-top:0}.icon{font-size:30px}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:25px}.about p{line-height:1.8;color:var(--muted)}.timeline{border-left:3px solid #d8e9e2;padding-left:20px}.timeline div{margin-bottom:18px}.timeline strong{color:var(--p)}
+.contact-item b{display:block;margin:7px 0}.contact-item span{color:var(--muted);word-break:break-word}
+footer{background:var(--dark);color:#d7ebe4;padding:35px 0}.footer-flex{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:100;padding:15px}.modal.open{display:grid}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;padding:27px;position:relative}.close{position:absolute;right:15px;top:12px;border:0;background:#edf4f1;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer}
+form{display:grid;gap:13px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}label{font-size:13px;font-weight:800}input,select,textarea{width:100%;padding:12px;border:1px solid #d4e2dc;border-radius:10px;font:inherit;background:#fbfdfc}textarea{min-height:105px;resize:vertical}.hint{font-size:12px;color:var(--muted)}.notice{padding:12px 14px;border-radius:10px;background:#edf8f3;color:#216b53;font-size:14px}
+.dashboard{display:none;padding:70px 0}.dashboard.active{display:block}.dash-grid{display:grid;grid-template-columns:230px 1fr;gap:18px}.side{background:var(--dark);color:#fff;border-radius:18px;padding:14px;height:max-content}.side button{display:block;width:100%;text-align:left;background:transparent;border:0;color:#fff;padding:11px;border-radius:9px;cursor:pointer;font-weight:700}.side button:hover,.side button.active{background:#176f59}.dash-panel{background:#fff;border-radius:18px;border:1px solid var(--border);padding:24px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.stat{padding:18px;background:#f1f8f5;border-radius:14px}.stat b{font-size:28px;display:block;color:var(--p)}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px;border-bottom:1px solid #e5eeea;text-align:left;font-size:13px}.status{padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800}.pending{background:#fff5d9;color:#916d0c}.accepted,.approved{background:#def5e9;color:#177245}.declined,.rejected{background:#ffe5e1;color:#a62c20}.hidden{display:none!important}.loading{opacity:.65;pointer-events:none}
+.toast{position:fixed;right:18px;bottom:18px;z-index:300;background:var(--dark);color:#fff;padding:13px 16px;border-radius:12px;display:none;box-shadow:var(--shadow)}.toast.show{display:block}
+@media(max-width:900px){.hero-grid,.about{grid-template-columns:1fr}.cards,.register-grid,.contact-grid{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}nav{display:none}}
+@media(max-width:600px){.cards,.register-grid,.contact-grid,.grid2,.stats{grid-template-columns:1fr}.hero{min-height:auto}.hero-grid{padding:55px 0}h1{font-size:44px}.nav{min-height:63px}}
+</style>
+</head>
+<body>
+<header>
+<div class="container nav">
+<a href="#home" class="brand"><span class="logo">IIS</span><span>IISMS<br><small>Ifa Islama School</small></span></a>
+<nav>
+<a href="#home">Home</a><a href="#about">About</a><a href="#registration">Registration</a><a href="#payment">Payment</a><a href="#contact">Contact</a>
+<button id="langBtn">🌐 EN</button><button class="btn primary" onclick="openLogin('admin')">Admin</button><button class="btn secondary" onclick="openLogin('staff')">Staff</button>
+</nav>
+</div>
+</header>
+
+<main id="public">
+<section class="hero" id="home"><div class="container hero-grid"><div>
+<span class="badge">DIGITAL SCHOOL • IISMS</span>
+<h1>Smart management for a better school.</h1>
+<p>Ifa Islama School Management System connects students, teachers, workers, families and school administration in one modern digital platform.</p>
+<div class="actions"><a class="btn primary" href="#registration">Start Registration</a><a class="btn secondary" href="#about">Learn More</a></div>
+</div><div class="hero-card"><div class="big">IISMS</div><h3>School announcements</h3><p id="announcement">Welcome to Ifa Islama School Management System.</p><hr style="border:0;border-top:1px solid rgba(255,255,255,.15)"><p>✓ Registration & approvals<br>✓ Attendance & mark lists<br>✓ Monthly payment verification<br>✓ Multi-language support</p></div></div></section>
+
+<section id="about"><div class="container"><div class="section-title"><h2>About Ifa Islama School</h2><p>A place for knowledge, character and a digital future.</p></div><div class="about">
+<div class="card"><h3>Our Story</h3><p>Ifa Islama School is committed to providing quality education, strong character development and a supportive learning environment.</p><p>With IISMS, important school processes move toward a secure digital workflow while keeping administrators in control.</p></div>
+<div class="card"><h3>Our Vision</h3><div class="timeline"><div><strong>01 • Education</strong><br>Organized academic information.</div><div><strong>02 • Technology</strong><br>Digital attendance, marks and registration.</div><div><strong>03 • Community</strong><br>Clear communication with families and staff.</div><div><strong>04 • Future</strong><br>A scalable long-term school platform.</div></div></div>
+</div></div></section>
+
+<section id="registration"><div class="container"><div class="section-title"><h2>Registration</h2><p>Choose the registration type you need.</p></div><div class="register-grid">
+<div class="card" onclick="openReg('new_student')" style="cursor:pointer"><div class="icon">🎓</div><h3>New Student</h3><p>Apply for admission.</p></div>
+<div class="card" onclick="openReg('old_student')" style="cursor:pointer"><div class="icon">📚</div><h3>Old Student</h3><p>Register an existing student.</p></div>
+<div class="card" onclick="openReg('teacher')" style="cursor:pointer"><div class="icon">👨‍🏫</div><h3>New Teacher</h3><p>Submit teacher registration.</p></div>
+<div class="card" onclick="openReg('worker')" style="cursor:pointer"><div class="icon">🧑‍💼</div><h3>New Worker</h3><p>Submit worker registration.</p></div>
+</div></div></section>
+
+<section id="payment"><div class="container"><div class="section-title"><h2>Monthly Payment</h2><p>Submit payment information for admin verification.</p></div><div class="card" style="max-width:760px;margin:auto">
+<div class="notice">Payment records are saved in Supabase. Receipt files require a Supabase Storage bucket named <b>payment-receipts</b> for upload.</div><br>
+<form id="paymentForm"><div class="grid2"><div><label>Student Full Name</label><input required name="student"></div><div><label>Student ID</label><input required name="studentId"></div></div>
+<div class="grid2"><div><label>Month</label><select name="month" required><option value="">Choose</option><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select></div><div><label>Amount (ETB)</label><input type="number" min="0" name="amount" required></div></div>
+<div><label>Transaction Reference</label><input name="reference" required></div><div><label>Transfer Screenshot / PDF</label><input type="file" name="receipt" accept="image/*,.pdf"></div>
+<button class="btn primary" type="submit">Submit Payment</button></form></div></div></section>
+
+<section id="contact"><div class="container"><div class="section-title"><h2>Contact Us</h2><p>Reach Ifa Islama School.</p></div><div class="contact-grid">
+<div class="contact-item">📞<b>Phone</b><span>0915044161</span></div><div class="contact-item">✉️<b>Email</b><span>filebar2025@gmail.com</span></div><div class="contact-item">📍<b>Location</b><span>Chiro, Oromia, Ethiopia</span></div><div class="contact-item">✈️<b>Telegram</b><span>School Telegram channel</span></div>
+</div></div></section>
+</main>
+
+<section class="dashboard" id="adminDashboard"><div class="container"><div class="section-title"><h2>Admin Controller System</h2><p id="adminUser">Authenticated administrator</p></div><div class="dash-grid">
+<aside class="side"><button class="active" onclick="showPanel('overview',this)">📊 Overview</button><button onclick="showPanel('applicationsPanel',this)">📝 Applications</button><button onclick="showPanel('studentsPanel',this)">🎓 Students</button><button onclick="showPanel('marksPanel',this)">📚 Results</button><button onclick="showPanel('attendancePanel',this)">📅 Attendance</button><button onclick="showPanel('paymentsPanel',this)">💰 Payments</button><button onclick="showPanel('announcementPanel',this)">📢 Announcement</button><button onclick="logout()">🚪 Logout</button></aside>
+<div class="dash-panel">
+<div id="overview"><div class="stats"><div class="stat"><b id="aPending">0</b>Pending Applications</div><div class="stat"><b id="aPayments">0</b>Payments</div><div class="stat"><b id="aStudents">0</b>Students</div><div class="stat"><b id="aStaff">0</b>Staff</div></div><div class="notice">Admin dashboard is connected to Supabase. Use the menu to manage registrations, students, marks, attendance, payments and announcements.</div></div>
+
+<div id="applicationsPanel" class="hidden"><h3>Registration Applications</h3><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Type</th><th>Phone</th><th>Status</th><th>Action</th></tr></thead><tbody id="applications"></tbody></table></div></div>
+
+<div id="studentsPanel" class="hidden"><h3>Students</h3><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Student Code</th><th>Class</th><th>Status</th></tr></thead><tbody id="studentsTable"></tbody></table></div></div>
+
+<div id="marksPanel" class="hidden"><h3>Result / Marks</h3><p class="hint">Automatic semester and annual result views created in STEP 7.3 are available from Supabase.</p><button class="btn primary" onclick="loadAnnualResults()">Load Annual Rank</button><div class="table-wrap" style="margin-top:15px"><table class="table"><thead><tr><th>Student</th><th>Year</th><th>Average</th><th>Rank</th><th>Status</th></tr></thead><tbody id="resultsTable"></tbody></table></div></div>
+
+<div id="attendancePanel" class="hidden"><h3>Attendance Summary</h3><button class="btn primary" onclick="loadAttendance()">Load Attendance</button><div class="table-wrap" style="margin-top:15px"><table class="table"><thead><tr><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div>
+
+<div id="paymentsPanel" class="hidden"><h3>Payments</h3><div class="table-wrap"><table class="table"><thead><tr><th>Student</th><th>Amount</th><th>Type</th><th>Status</th></tr></thead><tbody id="paymentsTable"></tbody></table></div></div>
+
+<div id="announcementPanel" class="hidden"><h3>Publish Announcement</h3><form id="announcementForm"><textarea id="announcementInput" required placeholder="Write a school announcement..."></textarea><button class="btn primary">Publish</button></form></div>
+</div></div></div></section>
+
+<section class="dashboard" id="staffDashboard"><div class="container"><div class="section-title"><h2>Staff Workspace</h2><p id="staffUser"></p></div><div class="dash-panel"><div class="stats"><div class="stat"><b id="staffStudents">0</b>Students</div><div class="stat"><b>2</b>Semesters</div><div class="stat"><b>✓</b>Supabase</div><div class="stat"><b>🔄</b>Sync Ready</div></div><div class="notice">Use this workspace for authorized school operations. RLS policies should be enabled in Supabase before production use.</div><br><button class="btn primary" onclick="logout()">Logout</button></div></div></section>
+
+<footer><div class="container footer-flex"><div><b>IISMS — Ifa Islama School Management System</b><br><small>Digital school management platform</small></div><div><small>© 2026 IISMS</small></div></div></footer>
+
+<div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   IISMS — SUPABASE CONFIGURATION
+   Project URL + publishable key supplied for this project.
+   Never put a service_role/secret key in this file.
+========================================================= */
+const SUPABASE_URL="https://osnlrkadjcvpxscyklbn.supabase.co";
+const SUPABASE_KEY="sb_publishable_0C4hv49UkXMu0Nwz7anAJg_KPc9HPYB";
+const {createClient}=supabase;
+const db=createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const $=id=>document.getElementById(id);
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
+function openModal(html){$("modalContent").innerHTML=html;$("modal").classList.add("open")}
+function closeModal(){$("modal").classList.remove("open")}
+
+async function openLogin(kind){
+openModal(`<h2>${kind==="admin"?"Admin Login":"Staff Login"}</h2>
+<form id="loginForm"><label>Email</label><input id="loginEmail" type="email" required autocomplete="email"><label>Password</label><input id="loginPassword" type="password" required autocomplete="current-password"><button class="btn primary">Login</button><p class="hint">Use the email/password account created in Supabase Authentication. Demo passwords from the old HTML are no longer used.</p></form>`);
+$("loginForm").onsubmit=async e=>{e.preventDefault();e.target.classList.add("loading");
+const {data,error}=await db.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
+if(error){toast(error.message);e.target.classList.remove("loading");return}
+await routeUser(kind);closeModal();e.target.classList.remove("loading")};
+}
+
+async function routeUser(requested){
+const {data:{user}}=await db.auth.getUser();if(!user)return;
+let role="teacher";
+const {data:p}=await db.from("profiles").select("full_name,role,is_active").eq("id",user.id).maybeSingle();
+if(p){role=p.role||"teacher";if(p.is_active===false){await db.auth.signOut();toast("This account is inactive.");return}}
+if(requested==="admin" && !["admin","principal"].includes(role)){await db.auth.signOut();toast("You are not authorized as an administrator.");return}
+$("public").classList.add("hidden");$("adminDashboard").classList.remove("active");$("staffDashboard").classList.remove("active");
+if(["admin","principal"].includes(role)){$("adminDashboard").classList.add("active");$("adminUser").textContent=(p?.full_name||user.email)+" • "+role;await loadAdmin()}
+else{$("staffDashboard").classList.add("active");$("staffUser").textContent=(p?.full_name||user.email)+" • "+role;await loadStaff()}
+window.scrollTo(0,0)
+}
+
+async function logout(){await db.auth.signOut();$("adminDashboard").classList.remove("active");$("staffDashboard").classList.remove("active");$("public").classList.remove("hidden");location.hash="home";toast("Logged out.")}
+
+async function openReg(type){
+const names={new_student:"New Student Registration",old_student:"Old Student Registration",teacher:"New Teacher Registration",worker:"New Worker Registration"};
+openModal(`<h2>${names[type]}</h2><form id="regForm"><input type="hidden" name="type" value="${type}">
+<div class="grid2"><div><label>Full Name</label><input name="name" required></div><div><label>Phone</label><input name="phone" required></div></div>
+${type.includes("student")?`<div class="grid2"><div><label>Date of Birth</label><input type="date" name="dob"></div><div><label>Class</label><input name="class"></div></div><div><label>Parent/Guardian Name</label><input name="guardian"></div>`:""}
+${type==="teacher"?`<div class="grid2"><div><label>Subject</label><input name="subject"></div><div><label>Qualification</label><input name="qualification"></div></div>`:""}
+${type==="worker"?`<div><label>Job/Work Type</label><input name="job"></div>`:""}
+<div><label>Additional Information</label><textarea name="info"></textarea></div>
+<button class="btn primary">Submit Application</button></form>`);
+$("regForm").onsubmit=async e=>{
+e.preventDefault();e.target.classList.add("loading");const d=Object.fromEntries(new FormData(e.target));
+/* Existing project has an applications table. The JSON payload keeps
+   registration fields flexible without assuming unseen columns. */
+const row={application_type:d.type,status:"pending",applicant_name:d.name,phone:d.phone,payload:d};
+const {error}=await db.from("applications").insert(row);
+if(error){toast("Application error: "+error.message);e.target.classList.remove("loading");return}
+closeModal();toast("Application submitted successfully.");e.target.reset()
+}
+}
+
+$("paymentForm").onsubmit=async e=>{
+e.preventDefault();e.target.classList.add("loading");const d=Object.fromEntries(new FormData(e.target));
+let receipt_url=null;const file=$("paymentForm").receipt.files[0];
+if(file){
+const path="receipts/"+crypto.randomUUID()+"-"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+const up=await db.storage.from("payment-receipts").upload(path,file);
+if(up.error){toast("Receipt upload failed. Create a Storage bucket named payment-receipts.");e.target.classList.remove("loading");return}
+const pub=db.storage.from("payment-receipts").getPublicUrl(path);receipt_url=pub.data.publicUrl;
+}
+const row={student_id:null,amount:Number(d.amount),payment_type:"monthly-"+d.month,payment_method:"other",payment_date:new Date().toISOString().slice(0,10),reference_number:d.reference,note:"Student: "+d.student+" | Student ID: "+d.studentId+(receipt_url?" | Receipt: "+receipt_url:""),status:"pending"};
+const {error}=await db.from("payments").insert(row);
+if(error){toast("Payment error: "+error.message);e.target.classList.remove("loading");return}
+e.target.reset();e.target.classList.remove("loading");toast("Payment submitted for admin verification.")
+};
+
+async function loadAdmin(){
+const [apps,students,payments,teachers,workers]=await Promise.all([
+db.from("applications").select("*").order("created_at",{ascending:false}),
+db.from("students").select("id,full_name,student_code,status,class_id").order("created_at",{ascending:false}),
+db.from("payments").select("*").order("created_at",{ascending:false}),
+db.from("teachers").select("id",{count:"exact",head:true}),
+db.from("workers").select("id",{count:"exact",head:true})
+]);
+const ap=apps.data||[],st=students.data||[],pa=payments.data||[];
+$("aPending").textContent=ap.filter(x=>String(x.status).toLowerCase()==="pending").length;
+$("aPayments").textContent=pa.length;$("aStudents").textContent=st.length;$("aStaff").textContent=(teachers.count||0)+(workers.count||0);
+renderApplications(ap);renderStudents(st);renderPayments(pa)
+}
+
+function renderApplications(rows){
+$("applications").innerHTML=rows.length?rows.map(a=>{
+const status=String(a.status||"pending");const name=a.applicant_name||a.name||a.payload?.name||"—";const type=a.application_type||a.type||a.payload?.type||"—";const phone=a.phone||a.payload?.phone||"—";
+return `<tr><td>${esc(name)}</td><td>${esc(String(type).replaceAll("_"," "))}</td><td>${esc(phone)}</td><td><span class="status ${status.toLowerCase()}">${esc(status)}</span></td><td>${status.toLowerCase()==="pending"?`<button class="btn primary" onclick="setApplication('${a.id}','accepted')">Accept</button> <button class="btn danger" onclick="setApplication('${a.id}','declined')">Decline</button>`:"—"}</td></tr>`}).join(""):`<tr><td colspan="5">No applications.</td></tr>`
+}
+async function setApplication(id,status){const {error}=await db.from("applications").update({status}).eq("id",id);if(error){toast(error.message);return}toast(status);loadAdmin()}
+function renderStudents(rows){$("studentsTable").innerHTML=rows.length?rows.map(s=>`<tr><td>${esc(s.full_name)}</td><td>${esc(s.student_code||"—")}</td><td>${esc(s.class_id||"—")}</td><td>${esc(s.status||"active")}</td></tr>`).join(""):`<tr><td colspan="4">No students.</td></tr>`}
+function renderPayments(rows){$("paymentsTable").innerHTML=rows.length?rows.map(p=>`<tr><td>${esc(p.note||"—")}</td><td>${Number(p.amount||0).toLocaleString()} ETB</td><td>${esc(p.payment_type||"—")}</td><td><span class="status ${String(p.status||"pending").toLowerCase()}">${esc(p.status||"pending")}</span></td></tr>`).join(""):`<tr><td colspan="4">No payments.</td></tr>`}
+
+async function loadAnnualResults(){
+const {data,error}=await db.from("annual_rank").select("*").order("rank",{ascending:true});
+if(error){toast("Annual rank view: "+error.message);return}
+$("resultsTable").innerHTML=(data||[]).map(r=>`<tr><td>${esc(r.student_name)}</td><td>${esc(r.academic_year)}</td><td>${Number(r.annual_average||0).toFixed(2)}</td><td>${esc(r.rank)}</td><td>${esc(r.result_status)}</td></tr>`).join("")||`<tr><td colspan="5">No annual results yet.</td></tr>`
+}
+async function loadAttendance(){
+const {data,error}=await db.from("student_attendance_report").select("*").order("attendance_percentage",{ascending:false});
+if(error){toast("Attendance view: "+error.message);return}
+$("attendanceTable").innerHTML=(data||[]).map(r=>`<tr><td>${esc(r.student_name)}</td><td>${r.total_days}</td><td>${r.present_days}</td><td>${r.absent_days}</td><td>${Number(r.attendance_percentage||0).toFixed(2)}%</td></tr>`).join("")||`<tr><td colspan="5">No attendance data.</td></tr>`
+}
+async function loadStaff(){const {count}=await db.from("students").select("id",{count:"exact",head:true});$("staffStudents").textContent=count||0}
+
+function showPanel(id,btn){document.querySelectorAll("#adminDashboard .dash-panel>div").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".side button").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}
+$("announcementForm").onsubmit=async e=>{
+e.preventDefault();const text=$("announcementInput").value.trim();if(!text)return;
+try{localStorage.setItem("iis_announcement",text);$("announcement").textContent=text;toast("Announcement published locally. For persistent announcements, add an announcements row in Supabase.")}catch(err){toast(err.message)}
+};
+const savedAnn=localStorage.getItem("iis_announcement");if(savedAnn)$("announcement").textContent=savedAnn;
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+/* Lightweight language switcher */
+const langs={en:{home:"Home"},om:{home:"Mana"},am:{home:"መነሻ"},ar:{home:"الرئيسية"},tr:{home:"Ana Sayfa"}};
+let lang=localStorage.getItem("iis_lang")||"en";
+$("langBtn").onclick=()=>{const a=["en","om","am","ar","tr"];lang=a[(a.indexOf(lang)+1)%a.length];localStorage.setItem("iis_lang",lang);$("langBtn").textContent="🌐 "+lang.toUpperCase();document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelector('nav a[href="#home"]').textContent=langs[lang].home};
+$("langBtn").textContent="🌐 "+lang.toUpperCase();document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelector('nav a[href="#home"]').textContent=langs[lang].home;
+
+db.auth.getSession().then(({data})=>{if(data.session)routeUser("admin")});
+</script>
+</body>
+</html>
